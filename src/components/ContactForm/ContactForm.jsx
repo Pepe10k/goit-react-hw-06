@@ -1,9 +1,15 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
+import { addContact } from '../../redux/contactsSlice';
+import { selectContacts } from '../../redux/selectors';
 import styles from './ContactForm.module.css';
 
-const ContactForm = ({ onAddContact }) => {
+const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
+
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -21,8 +27,21 @@ const ContactForm = ({ onAddContact }) => {
         .required('Phone number is required'),
     }),
     onSubmit: (values, { resetForm }) => {
-      const newContact = { id: nanoid(), ...values };
-      onAddContact(newContact);
+      const duplicate = contacts.find(
+        contact => contact.name.toLowerCase() === values.name.toLowerCase()
+      );
+
+      if (duplicate) {
+        alert(`${values.name} is already in contacts!`);
+        return;
+      }
+
+      dispatch(
+        addContact({
+          id: nanoid(),
+          ...values,
+        })
+      );
       resetForm();
     },
   });
@@ -62,7 +81,6 @@ const ContactForm = ({ onAddContact }) => {
       {formik.touched.number && formik.errors.number ? (
         <div className={styles.error}>{formik.errors.number}</div>
       ) : null}
-
       <button type="submit" className={styles.submitBtn}>
         Add Contact
       </button>

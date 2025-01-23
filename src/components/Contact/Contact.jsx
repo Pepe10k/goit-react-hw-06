@@ -1,8 +1,11 @@
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { deleteContact } from '../../redux/contactsSlice';
 import { FaUser, FaPhoneAlt } from 'react-icons/fa';
 import styles from './Contact.module.css';
 
-const Contact = ({ id, name, number, onDelete }) => {
+const Contact = ({ id, name, number }) => {
+  const dispatch = useDispatch();
+
   return (
     <li className={styles.item}>
       <div className={styles.details}>
@@ -19,18 +22,14 @@ const Contact = ({ id, name, number, onDelete }) => {
           <span className={styles.number}>{number}</span>
         </div>
       </div>
-      <button className={styles.deleteBtn} onClick={() => onDelete(id)}>
+      <button
+        className={styles.deleteBtn}
+        onClick={() => dispatch(deleteContact(id))}
+      >
         Delete
       </button>
     </li>
   );
-};
-
-Contact.propTypes = {
-  id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  number: PropTypes.string.isRequired,
-  onDelete: PropTypes.func.isRequired,
 };
 
 export default Contact;
